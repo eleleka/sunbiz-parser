@@ -1,7 +1,7 @@
 const fs = require('fs');
 
-const filePath = '20230605c.txt';
-const newFilePath = '20230605c-export.txt';
+// const filePath = '20230605c.txt';
+// const newFilePath = '20230605c-export.txt';
 const symbol = '|';
 // const symbol = ',';
 
@@ -10,45 +10,58 @@ const positionsToInsertSymbol = [12, 205, 222, 265, 308, 339, 352, 395, 438, 467
 const newLine = 'Entity|Name|Type|Principal Address 1|Principal Address 2|Principal City|Principal ZIP|Principal Address 3|Mailing Address 1|Mailing City|Mailing ZIP|Mailing Address 2|Mailing Address 3|Principal State|Registered Agent Name|||Registered Agent address|Registered Agent City||Title||Authorized Person Last name|Authorized Person First Name||Authorized Person Address 1|Authorized Person city|Authorized Person ZIP||||||||\n';
 // const newLine = 'Entity,Name,Type,Principal Address 1,Principal Address 2,Principal City,Principal ZIP,Principal Address 3,Mailing Address 1,Mailing City,Mailing ZIP,Mailing Address 2,Mailing Address 3,Principal State,Registered Agent Name,,,Registered Agent address,Registered Agent City,,Title,,Authorized Person First Name,Authorized Person Last name,,Authorized Person Address 1,Authorized Person city,Authorized Person ZIP,,,,,,,,\n';
 
-fs.readFile(filePath, 'utf-8', (err, content) => {
-  if (err) {
-    console.error('Error reading the TXT file:', err);
-    return;
-  }
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-  // Process each line
-  const modifiedContent = content.split('\n').map(line => {
-    // Insert the symbol at specified positions
-    let modifiedLine = line;
-    for (const position of positionsToInsertSymbol) {
-      if (position <= modifiedLine.length) {
-        modifiedLine = modifiedLine.slice(0, position) + symbol + modifiedLine.slice(position);
-      }
-    }
+readline.question(`Enter filename: `, name => {
+  const filePath = `${name}.txt`;
+  const newFilePath = `${name}-export.txt`;
 
-    // Remove all spaces before the |
-    modifiedLine = modifiedLine.replace(/\s*(\|)/g, `$1`);
-
-    return modifiedLine;
-  }).join('\n'); // Join the modified lines back to form the updated content
-
-
-  const lines = modifiedContent.split('\n'); // break the text on lines
-  const filteredLines = lines.filter(line => {
-    // Check if the line contains any of the values to delete
-    return searchZip.some(value => line.includes(value));
-  }).join('\n');
-
-  // add new first line
-  const updatedContent = newLine + filteredLines;
-
-  // Write the modified content back to the file
-  fs.writeFile(newFilePath, updatedContent, 'utf-8', (err) => {
+  fs.readFile(filePath, 'utf-8', (err, content) => {
     if (err) {
-      console.error('Error writing to the TXT file:', err);
+      console.error('Error reading the TXT file:', err);
       return;
     }
 
-    console.log('Symbols inserted successfully on each line of the TXT file.');
+    // Process each line
+    const modifiedContent = content.split('\n').map(line => {
+      // Insert the symbol at specified positions
+      let modifiedLine = line;
+      for (const position of positionsToInsertSymbol) {
+        if (position <= modifiedLine.length) {
+          modifiedLine = modifiedLine.slice(0, position) + symbol + modifiedLine.slice(position);
+        }
+      }
+
+      // Remove all spaces before the |
+      modifiedLine = modifiedLine.replace(/\s*(\|)/g, `$1`);
+
+      return modifiedLine;
+    }).join('\n'); // Join the modified lines back to form the updated content
+
+
+    const lines = modifiedContent.split('\n'); // break the text on lines
+    const filteredLines = lines.filter(line => {
+      // Check if the line contains any of the values to delete
+      return searchZip.some(value => line.includes(value));
+    }).join('\n');
+
+    // add new first line
+    const updatedContent = newLine + filteredLines;
+
+    // Write the modified content back to the file
+    fs.writeFile(newFilePath, updatedContent, 'utf-8', (err) => {
+      if (err) {
+        console.error('Error writing to the TXT file:', err);
+        return;
+      }
+
+      console.log('Symbols inserted successfully on each line of the TXT file.');
+    });
   });
+
+
+  readline.close();
 });
