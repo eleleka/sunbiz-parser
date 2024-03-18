@@ -1,6 +1,15 @@
 {
+  "name": "project-name",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./modifyTxtFile.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "bin": "./modifyTxtFile.js",
   "dependencies": {
     "fs": "^0.0.1-security",
+    "nexe": "^4.0.0-rc.2",
     "pkg": "^5.8.1"
   }
 }
